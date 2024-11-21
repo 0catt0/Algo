@@ -26,15 +26,27 @@ class Edge {
     }
 }
 
+class Mudang {
+    Node from, to;
+    int cost;
+
+    Mudang(Node from, Node to, int cost) {
+        this.from = from;
+        this.to = to;
+        this.cost = cost;
+    }
+}
+
+
 class MapPanel extends JPanel {
     private final List<Node> nodes;
     private final List<Edge> edges;
-    private final Image treeImage; // 나무 이미지
+    private final List<Mudang> mudangs;
 
-    public MapPanel(List<Node> nodes, List<Edge> edges, String treeImagePath) {
+    public MapPanel(List<Node> nodes, List<Edge> edges, List<Mudang> mudangs) {
         this.nodes = nodes;
         this.edges = edges;
-        this.treeImage = new ImageIcon(treeImagePath).getImage(); // 나무 이미지 로드
+        this.mudangs = mudangs;
     }
 
     @Override
@@ -56,11 +68,11 @@ class MapPanel extends JPanel {
         // 앤티앨리어싱 설정
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // 나무 배경 장식 추가
-        for (int i = 50; i < getWidth(); i += 100) {
-            for (int j = 50; j < getHeight(); j += 100) {
-                g2.drawImage(treeImage, i, j, 40, 40, this);
-            }
+        // 무당 경로 빨간색 표시
+        g2.setColor(new Color(220, 20, 60));
+        g2.setStroke(new BasicStroke(3));
+        for (Mudang mudang : mudangs) {
+            g2.drawLine(mudang.from.x, mudang.from.y, mudang.to.x, mudang.to.y);
         }
 
         // 엣지 그리기 (곡선)
@@ -101,14 +113,14 @@ class MapPanel extends JPanel {
 }
 
 public class Map extends JFrame {
-    public Map(List<Node> nodes, List<Edge> edges) {
+    public Map(List<Node> nodes, List<Edge> edges, List<Mudang> mudangs) {
         setTitle("Campus Map with Highlighted Area");
         setSize(1000, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // CustomPanel을 JFrame에 추가
-        MapPanel mapPanel = new MapPanel(nodes, edges, "tree.png");
+        // MapPanel 객체 생성
+        MapPanel mapPanel = new MapPanel(nodes, edges, mudangs);
         add(mapPanel);
     }
 
@@ -161,9 +173,17 @@ public class Map extends JFrame {
         edges.add(new Edge(nodes.get(13), nodes.get(14), 1));
         edges.add(new Edge(nodes.get(14), nodes.get(15), 1));
 
+        // 무당 경로 생성
+        List<Mudang> mudang = new ArrayList<>();
+        mudang.add(new Mudang(nodes.get(0), nodes.get(3), 2));
+        mudang.add(new Mudang(nodes.get(3), nodes.get(9), 1));
+        mudang.add(new Mudang(nodes.get(9), nodes.get(10), 1));
+        mudang.add(new Mudang(nodes.get(10), nodes.get(11), 1));
+        mudang.add(new Mudang(nodes.get(11), nodes.get(15), 1));
+
         // GUI 실행
         SwingUtilities.invokeLater(() -> {
-            new Map(nodes, edges).setVisible(true);
+            new Map(nodes, edges, mudang).setVisible(true);
         });
     }
-} 
+}
