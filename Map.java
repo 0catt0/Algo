@@ -19,7 +19,7 @@ public class Map extends JFrame {
         add(mapPanel);
 
         //dijkstra algorithm 실행
-        List<Object> shortestPath = Dijkstra.findShortestPath(nodes.get(0), nodes.get(12), edges, mudangs);
+        List<Object> shortestPath = Dijkstra.findShortestPath(nodes.get(0), nodes.get(6), edges, mudangs);
 
         //GUI에 최단 경로 반영
         mapPanel.setShortestPath(shortestPath);
