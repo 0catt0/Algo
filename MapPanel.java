@@ -3,19 +3,26 @@ import java.awt.*;
 import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 class MapPanel extends JPanel {
     private final List<Node> nodes;
     private final List<Edge> edges;
     private final List<Mudang> mudangs;
-    private final List<Edge> shortestPathEdges;
+    private List<Object> shortestPath;
 
-    public MapPanel(List<Node> nodes, List<Edge> edges, List<Mudang> mudangs, List<Edge> shortestPathEdges) {
+    public MapPanel(List<Node> nodes, List<Edge> edges, List<Mudang> mudangs, List<Object> shortestPath) {
         this.nodes = nodes;
         this.edges = edges;
         this.mudangs = mudangs;
-        this.shortestPathEdges = shortestPathEdges;
+        this.shortestPath = new ArrayList<>();
     }
+    // 최단 경로 설정 메서드
+    public void setShortestPath(List<Object> shortestPath) {
+        this.shortestPath = shortestPath;
+        repaint(); // 화면 갱신
+    }
+
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -44,9 +51,17 @@ class MapPanel extends JPanel {
         }
         // 최단 경로 표시 (굵은 파란색 선)
         g2.setColor(Color.BLUE);
-        g2.setStroke(new BasicStroke(4));
-        for (Edge edge : shortestPathEdges) {
-            g2.drawLine(edge.from.x, edge.from.y, edge.to.x, edge.to.y);
+        g2.setStroke(new BasicStroke(3));
+        if (shortestPath != null) {
+            for (Object obj : shortestPath) {
+                if (obj instanceof Edge) {
+                    Edge edge = (Edge) obj;
+                    g2.drawLine(edge.from.x, edge.from.y, edge.to.x, edge.to.y);
+                } else if (obj instanceof Mudang) {
+                    Mudang mudang = (Mudang) obj;
+                    g2.drawLine(mudang.from.x, mudang.from.y, mudang.to.x, mudang.to.y);
+                }
+            }
         }
 
         // 엣지 그리기 (곡선)

@@ -1,10 +1,26 @@
-class Mudang {
-    Node from, to;
-    int cost;
+public class Mudang {
+    public final Node from;
+    public final Node to;
+    public final int cost;
 
-    Mudang(Node from, Node to, int cost) {
+    public Mudang(Node from, Node to, int cost) {
         this.from = from;
         this.to = to;
         this.cost = cost;
+    }
+
+    // 시작 노드를 반환
+    public Node getStart() {
+        return from;
+    }
+
+    // 끝 노드를 반환
+    public Node getEnd() {
+        return to;
+    }
+
+    // 가중치를 반환
+    public int getWeight() {
+        return cost;
     }
 }

@@ -2,18 +2,25 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Map extends JFrame {
-    public Map(List<Node> nodes, List<Edge> edges, List<Mudang> mudangs, List<Edge> shortestPathEdges) {
+    public Map(List<Node> nodes, List<Edge> edges, List<Mudang> mudangs) {
         setTitle("Campus Map with Highlighted Area");
         setSize(1000, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // MapPanel 객체 생성
-        MapPanel mapPanel = new MapPanel(nodes, edges, mudangs, shortestPathEdges);
+        // 초기 값으로 빈 리스트 전달
+        MapPanel mapPanel = new MapPanel(nodes, edges, mudangs, new ArrayList<>());
         add(mapPanel);
+
+        //dijkstra algorithm 실행
+        List<Object> shortestPath = Dijkstra.findShortestPath(nodes.get(0), nodes.get(12), edges, mudangs);
+
+        //GUI에 최단 경로 반영
+        mapPanel.setShortestPath(shortestPath);
     }
     public static void main(String[] args) {
         // 노드 생성
@@ -73,11 +80,9 @@ public class Map extends JFrame {
         mudang.add(new Mudang(nodes.get(10), nodes.get(11), 1));
         mudang.add(new Mudang(nodes.get(11), nodes.get(15), 1));
 
-        //최단 경로 계산
-        List<Edge> shortestPathEdges = Dijkstra.findShortestPath(nodes, edges, nodes.get(0), nodes.get(9));
         // GUI 실행
         SwingUtilities.invokeLater(() -> {
-            new Map(nodes, edges, mudang, shortestPathEdges).setVisible(true);
+            new Map(nodes, edges, mudang).setVisible(true);
         });
     }
 }

@@ -1,61 +1,86 @@
-import javax.swing.*;
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
-class Dijkstra {
-    static class NodeInfo {
-        Node node;
-        int distance;
+public class Dijkstra {
 
-        NodeInfo(Node node, int distance) {
-            this.node = node;
-            this.distance = distance;
-        }
-    }
-
-    public static List<Edge> findShortestPath(List<Node> nodes, List<Edge> edges, Node start, Node end) {
+    public static List<Object> findShortestPath(Node start, Node end, List<Edge> edges, List<Mudang> mudangs) {
         HashMap<Node, Integer> distances = new HashMap<>();
-        HashMap<Node, Node> previous = new HashMap<>();
-        PriorityQueue<NodeInfo> queue = new PriorityQueue<>(Comparator.comparingInt(info -> info.distance));
-        Set<Node> visited = new HashSet<>();
+        HashMap<Node, Node> previousNodes = new HashMap<>();
+        PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(distances::get));
 
-        // 초기화
-        for (Node node : nodes) {
-            distances.put(node, Integer.MAX_VALUE);
-            previous.put(node, null);
+        for (Edge edge : edges) {
+            distances.put(edge.getStart(), Integer.MAX_VALUE);
+            distances.put(edge.getEnd(), Integer.MAX_VALUE);
         }
         distances.put(start, 0);
-        queue.add(new NodeInfo(start, 0));
+        priorityQueue.add(start);
 
-        // 알고리즘 실행
-        while (!queue.isEmpty()) {
-            NodeInfo current = queue.poll();
-            if (!visited.add(current.node)) continue;
+        Set<Node> visited = new HashSet<>();
+
+        while (!priorityQueue.isEmpty()) {
+            Node current = priorityQueue.poll();
+            if (visited.contains(current)) continue;
+            visited.add(current);
 
             for (Edge edge : edges) {
-                if (edge.from.equals(current.node) && !visited.contains(edge.to)) {
-                    int newDist = distances.get(current.node) + edge.cost;
-                    if (newDist < distances.get(edge.to)) {
-                        distances.put(edge.to, newDist);
-                        previous.put(edge.to, current.node);
-                        queue.add(new NodeInfo(edge.to, newDist));
+                if (edge.getStart().equals(current) || edge.getEnd().equals(current)) {
+                    Node neighbor = edge.getStart().equals(current) ? edge.getEnd() : edge.getStart();
+                    if (visited.contains(neighbor)) continue;
+
+                    int newDistance = distances.get(current) + edge.getWeight();
+                    if (newDistance < distances.getOrDefault(neighbor, Integer.MAX_VALUE)) {
+                        distances.put(neighbor, newDistance);
+                        previousNodes.put(neighbor, current);
+                        priorityQueue.add(neighbor);
+                    }
+                }
+            }
+
+            for (Mudang mudang : mudangs) {
+                if (mudang.getStart().equals(current)) {
+                    Node neighbor = mudang.getEnd();
+                    if (visited.contains(neighbor)) continue;
+
+                    int newDistance = distances.get(current) + mudang.getWeight();
+                    if (newDistance < distances.getOrDefault(neighbor, Integer.MAX_VALUE)) {
+                        distances.put(neighbor, newDistance);
+                        previousNodes.put(neighbor, current);
+                        priorityQueue.add(neighbor);
                     }
                 }
             }
         }
 
-        // 최단 경로 복원
-        List<Edge> path = new ArrayList<>();
-        for (Node at = end; previous.get(at) != null; at = previous.get(at)) {
-            Node prev = previous.get(at);
+        List<Object> path = new ArrayList<>();
+        Node step = end;
+
+        if (!previousNodes.containsKey(end)) {
+            System.out.println("경로가 존재하지 않습니다.");
+            return Collections.emptyList();
+        }
+
+        while (previousNodes.containsKey(step)) {
+            Node previous = previousNodes.get(step);
+
             for (Edge edge : edges) {
-                if (edge.from.equals(prev) && edge.to.equals(at)) {
-                    path.add(0, edge);
+                if ((edge.getStart().equals(previous) && edge.getEnd().equals(step)) ||
+                        (edge.getEnd().equals(previous) && edge.getStart().equals(step))) {
+                    path.add(edge);
                     break;
                 }
             }
+
+            for (Mudang mudang : mudangs) {
+                if (mudang.getStart().equals(previous) && mudang.getEnd().equals(step)) {
+                    path.add(mudang);
+                    break;
+                }
+            }
+
+            step = previous;
         }
+
+        Collections.reverse(path);
         return path;
     }
+
 }

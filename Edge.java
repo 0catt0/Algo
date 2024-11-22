@@ -1,16 +1,26 @@
-class Edge {
-    Node from, to;
-    int cost;
+public class Edge {
+    public final Node from;
+    public final Node to;
+    public final int cost;
 
-    Edge(Node from, Node to, int cost) {
+    public Edge(Node from, Node to, int cost) {
         this.from = from;
         this.to = to;
         this.cost = cost;
     }
 
-//    // cost 표시를 위한 - 예찬
-//    @Override
-//    public String toString() {
-//        return "" + cost;
-//    }
+    // 시작 노드를 반환
+    public Node getStart() {
+        return from;
+    }
+
+    // 끝 노드를 반환
+    public Node getEnd() {
+        return to;
+    }
+
+    // 가중치를 반환
+    public int getWeight() {
+        return cost;
+    }
 }
