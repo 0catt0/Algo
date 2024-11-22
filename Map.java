@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// 1차 완성 본. GUI로 추가적인 부분 구현 이후 수정 하면 될 것 같다.
+
 public class Map extends JFrame {
     public Map(List<Node> nodes, List<Edge> edges, List<Mudang> mudangs) {
         setTitle("Campus Map with Highlighted Area");
